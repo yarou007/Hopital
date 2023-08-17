@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ma.enset.hopital.springboot.entities.Patient;
@@ -39,7 +40,26 @@ public class PatientController {
 		patientRepository.deleteById(id);
 		return "redirect:/index?page="+page+"&keyword="+keyword;
 	}
+	
+    @GetMapping("/")
+    public String home(@RequestParam(name="page", defaultValue = "0") int page,@RequestParam(name="size", defaultValue = "4")int size,
+    		@RequestParam(name="keyword", defaultValue = "") String kw) {
+    	return"redirect:index";
+    }
 
+    @GetMapping("/formPatients")
+    public String formPatient(Model model) {
+    	
+    	model.addAttribute("patient",new Patient());
+    	
+    	return "formPatient";
+    }
+    @PostMapping("/savePatient")
+    public String savePatient(Patient patient) {
+    	patientRepository.save(patient);
+    	return "redirect:/index";
+    }
+    
 
 
 }
