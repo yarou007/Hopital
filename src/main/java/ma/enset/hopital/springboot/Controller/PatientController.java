@@ -1,18 +1,23 @@
 package ma.enset.hopital.springboot.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.validation.Valid;
 import ma.enset.hopital.springboot.entities.Patient;
 import ma.enset.hopital.springboot.repository.PatientRepository;
 
@@ -55,9 +60,25 @@ public class PatientController {
     	return "formPatient";
     }
     @PostMapping("/savePatient")
-    public String savePatient(Patient patient) {
-    	patientRepository.save(patient);
-    	return "redirect:/index";
+    public String savePatient(@Validated Patient patient, BindingResult bindingResult) {
+    	if (bindingResult.hasErrors()) {return "formPatient";}
+        patientRepository.save(patient);
+    	return "redirect:/index?keyword="+patient.getNom();
+    }
+    
+    @GetMapping("/editPatient")
+    public String editPatient(Long id ,Model model) {
+    	Patient p = patientRepository.findById(id).get();
+    	model.addAttribute("patient",p); 
+    	return "formEditPatient";
+    }
+    
+    @PostMapping("/editDbPatient")
+    public String editDbPatient(@Validated Patient patient, BindingResult bindingResult) {
+    	if (bindingResult.hasErrors()) {return "formEditPatient";}
+    	else patientRepository.save(patient);
+    	return "redirect:/index?keyword="+patient.getNom();
+    		
     }
     
 
