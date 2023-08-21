@@ -2,23 +2,27 @@ package ma.enset.hopital.springboot;
 
 import java.util.Date;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 
 import ma.enset.hopital.springboot.entities.Patient;
 import ma.enset.hopital.springboot.repository.PatientRepository;
 
+
 @SpringBootApplication
 public class HopitalApplication    {
 //implements CommandLineRunner
-	@Autowired
-	private PatientRepository patientRepository; 
-	
+
 	public static void main(String[] args) {
 		SpringApplication.run(HopitalApplication.class, args);
 	}
+
+	 
  
 	/*@Override
 	public void run(String... args) throws Exception {
