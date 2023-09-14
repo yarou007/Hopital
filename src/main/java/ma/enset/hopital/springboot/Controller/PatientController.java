@@ -1,12 +1,16 @@
 package ma.enset.hopital.springboot.Controller;
 
 import java.security.Principal;
+
+
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,12 +28,17 @@ import ma.enset.hopital.springboot.entities.Patient;
 import ma.enset.hopital.springboot.repository.PatientRepository;
 
 @Controller
+
 public class PatientController {
 
 	@Autowired
 	private PatientRepository patientRepository;
 
-
+	  @GetMapping("/login")
+	    public String login(){
+	        return "login";
+	    }
+	  
 	@GetMapping("/index")
 	public String index(Model model,@RequestParam(name="page", defaultValue = "0") int page,@RequestParam(name="size", defaultValue = "4")int size
 			,@RequestParam(name="keyword", defaultValue = "") String kw) {
@@ -42,7 +51,8 @@ public class PatientController {
 		return "patients";
 	}
 	
-	@GetMapping("/delete")
+	@GetMapping("/admin/delete")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String delete(Long id, String keyword, int page) {
 		patientRepository.deleteById(id);
 		return "redirect:/index?page="+page+"&keyword="+keyword;
@@ -55,6 +65,7 @@ public class PatientController {
     }
 
     @GetMapping("/formPatients")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String formPatient(Model model) {
     	
     	model.addAttribute("patient",new Patient());
@@ -82,6 +93,7 @@ public class PatientController {
     	return "redirect:/index?keyword="+patient.getNom();
     		
     }
+  
   
     
 

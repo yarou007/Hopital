@@ -2,16 +2,17 @@ package ma.enset.hopital.springboot;
 
 import java.util.Date;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
-import ma.enset.hopital.springboot.entities.Patient;
 import ma.enset.hopital.springboot.repository.PatientRepository;
+
 
 
 @SpringBootApplication
@@ -20,6 +21,34 @@ public class HopitalApplication    {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HopitalApplication.class, args);
+	}
+	
+	
+	@Bean	
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public CommandLineRunner commandLineRunnerJdbcUsers(JdbcUserDetailsManager jdbcUserDetailsManager) {
+		PasswordEncoder passwordEncoder = passwordEncoder();
+		return args -> {
+			if (!jdbcUserDetailsManager.userExists("user1")) {
+			jdbcUserDetailsManager.createUser(
+                   User.withUsername("user1").password(passwordEncoder.encode("123")).authorities("USER").build()
+					); 
+			}
+			if (!jdbcUserDetailsManager.userExists("user2")) {
+			jdbcUserDetailsManager.createUser(
+	                   User.withUsername("user2").password(passwordEncoder.encode("456")).authorities("USER").build()
+						); 
+			}
+			if (!jdbcUserDetailsManager.userExists("admin")) {
+			jdbcUserDetailsManager.createUser(
+	                   User.withUsername("admin").password(passwordEncoder.encode("admin")).authorities("USER","ADMIN").build()
+						);
+			}
+		};
 	}
 
 	 
